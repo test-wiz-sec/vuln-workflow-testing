@@ -1,0 +1,28 @@
+# SCAN-ONLY FIXTURE — THIS WORKFLOW MUST NEVER EXECUTE.
+#
+# It references tj-actions/changed-files@v45.0.7, which is affected by CVE-2025-30066
+# (GHSA-mrrh-fwg8-r2c3): the March-2025 supply-chain compromise in which the action
+# printed CI secrets into build logs. It exists here only as YAML text, so that Wiz's
+# static GitHub Actions parser can extract the `uses:` reference and match it against
+# the GHSA "Actions" advisory feed. Nothing here is meant to run.
+#
+# Two independent guards keep it inert:
+#   1. `workflow_dispatch` only — no push/PR/issue trigger, so GitHub never schedules it.
+#   2. `if: false` on every job — even a manual dispatch is a no-op.
+# Removing either guard would run the compromised action. Don't.
+name: wz95370-sca-e2e
+
+on: workflow_dispatch
+
+jobs:
+  vulnerable-action-reference:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tj-actions/changed-files@v45.0.7
+
+  clean-action-reference:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
